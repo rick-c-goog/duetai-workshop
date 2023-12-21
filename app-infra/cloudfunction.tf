@@ -53,6 +53,10 @@ resource "google_cloudfunctions_function" "weather-client_function" {
       resource= "${local.cron_topic}"
       #service= "pubsub.googleapis.com"
    }
+   environment_variables = {
+    API_KEY = var.weather_api_key
+    BUCKET_NAME = var.data_storage_bucket
+   }
 
     # Dependencies are automatically inferred so these lines can be deleted
     depends_on            = [
