@@ -1,0 +1,28 @@
+openapi: 3.0.2
+info:
+  title: Weather API
+  description: This API fetches weather data from the Open-Meteo API and saves the result data to a JSON file and uploads it to a Cloud Storage bucket.
+  version: 1.0.0
+paths:
+  /:
+    get:
+      summary: Fetch weather data
+      description: This endpoint fetches weather data from the Open-Meteo API and saves the result data to a JSON file and uploads it to a Cloud Storage bucket.
+      operationId: fetchWeatherData
+      requestBody:
+        description: The list of locations to fetch weather data for.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  latitude:
+                    type: number
+                  longitude:
+                    type: number
+      responses:
+        '200':
+          description: Weather data fetched and saved successfully!

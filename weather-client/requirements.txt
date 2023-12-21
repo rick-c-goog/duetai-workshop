@@ -1,0 +1,5 @@
+requests
+json
+os
+fastapi
+google-cloud-storage

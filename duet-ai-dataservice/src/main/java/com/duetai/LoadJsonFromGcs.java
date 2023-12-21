@@ -1,3 +1,4 @@
+package com.duetai;
 import com.google.api.gax.rpc.ApiException;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryException;
