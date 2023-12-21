@@ -1,30 +1,39 @@
-iimport requests
+import requests
 import json
 import os
 from fastapi import FastAPI, Request
+from google.cloud import storage
 
 app = FastAPI()
 
 @app.get("/")
 def index():
-    # Get the list of locations from the request body
-    locations = request.json()
+  
+        api_key = os.environ['API_KEY']
+        bucket_name = os.environ['BUCKET_NAME']
+        destination_blob_name = "weather_data.json"
+        place = 'New York City,us'
 
-    # Fetch the weather data for each location
-    weather_data = []
-    for location in locations:
-        url = f"https://api.open-meteo.com/v1/forecast?latitude={location['latitude']}&longitude={location['longitude']}&units=metric"
+        url = f'https://api.openweathermap.org/data/2.5/weather?q={place}&appid={api_key}'
+
         response = requests.get(url)
-        weather_data.append(response.json())
 
-    # Save the weather data to a JSON file
-    with open("weather_data.json", "w") as f:
-        json.dump(weather_data, f)
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
 
-    # Upload the JSON file to a Cloud Storage bucket
-    bucket_name = os.environ["BUCKET_NAME"]
-    blob = bucket.blob("weather_data.json")
-    blob.upload_from_filename("weather_data.json")
+        if response.status_code == 200:
+            weather_data = response.json()
+            print(weather_data)
+            # Save the weather data to a JSON file
+            with open("weather_data.json", "w") as f:
+                json.dump(weather_data, f)
 
-    # Publish the endpoint using FastAPI
-    return "Weather data fetched and saved successfully!"
+            # Upload the JSON file to the blob
+            blob.upload_from_filename("weather_data.json")
+
+        else:
+            print("Error fetching weather data")
+
+        # Return a success message
+        return "Weather data fetched and saved successfully!"
