@@ -1,3 +1,106 @@
+
+/******************************************
+1. Project Services Configuration
+ *****************************************/
+module "activate_service_apis" {
+  source                      = "terraform-google-modules/project-factory/google//modules/project_services"
+  project_id                  = var.project_id
+  enable_apis                 = true
+
+  activate_apis = [
+    "orgpolicy.googleapis.com",
+    "compute.googleapis.com",
+    "bigquery.googleapis.com",
+    "storage.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "pubsub.googleapis.com",
+    "cloudscheduler.googleapis.com",
+    "cloudbuild.googleapis.com"
+  ]
+
+  disable_services_on_destroy = false
+  
+}
+
+
+/******************************************
+2. Project-scoped Org Policy Relaxing
+*****************************************/
+
+module "org_policy_allow_ingress_settings" {
+source = "terraform-google-modules/org-policy/google"
+policy_for = "project"
+project_id = var.project_id
+constraint = "constraints/cloudfunctions.allowedIngressSettings"
+policy_type = "list"
+enforce = false
+allow= ["IngressSettings.ALLOW_ALL"]
+depends_on = [
+time_sleep.sleep_after_activate_service_apis
+]
+}
+
+module "org_policy_allow_domain_membership" {
+source = "terraform-google-modules/org-policy/google"
+policy_for = "project"
+project_id = var.project_id
+constraint = "constraints/iam.allowedPolicyMemberDomains"
+policy_type = "list"
+enforce = false
+depends_on = [
+time_sleep.sleep_after_activate_service_apis
+]
+}
+
+/******************************************
+3. Create 2 Storge Buckets
+ *****************************************/
+
+resource "google_storage_bucket" "upload_bucket" {
+  name                              = "${var.project_id}-upload_bucket"
+  location                          = var.region
+  uniform_bucket_level_access       = true
+  force_destroy                     = true
+}
+
+resource "google_storage_bucket" "function_bucket" {
+  name                              = "${var.project_id}-function_bucket"
+  location                          = var.region
+  uniform_bucket_level_access       = true
+  force_destroy                     = true
+}
+
+
+/******************************************
+4. Create a pubsub topic
+ *****************************************/
+resource "google_pubsub_topic" "scheduler_topic" {
+  name = "${var.project_id}-cron_topic"
+
+  labels = {
+    job = "cron-job"
+  }
+
+  message_retention_duration = "86600s"
+}
+
+/******************************************
+5.Create a cloud scheduler
+ *****************************************/
+resource "google_cloud_scheduler_job" "job" {
+  name        = "cron-bq-export-job"
+  description = "bq export job"
+  schedule    = "0 12 * * SUN"
+  pubsub_target {
+    # topic.id is the topic's full resource name.
+    topic_name = google_pubsub_topic.scheduler_topic.id
+    data       = base64encode("test")
+  }
+}
+
+/******************************************
+6.Service account and IAM permissions
+ *****************************************/
 resource "google_service_account" "default" {
   account_id   = "my-service-account"
   display_name = "My Service Account"
@@ -33,24 +136,57 @@ resource "google_service_account_iam_binding" "pubsub_read_write" {
   members = ["serviceAccount:${google_service_account.default.email}"]
 }
 
+
+
 resource "google_bigquery_dataset" "default" {
-  dataset_id = "my-dataset"
+  dataset_id = "weather-dataset"
 }
 
 resource "google_bigquery_table" "default" {
-  table_id   = "my-table"
+  table_id   = "weather-table"
   dataset_id = google_bigquery_dataset.default.dataset_id
   schema {
     fields {
-      name  = "name"
-      type  = "STRING"
+      name  = "latitude"
+      type  = "double"
       mode = "REQUIRED"
     }
     fields {
-      name  = "age"
-      type  = "INTEGER"
+      name  = "longitude"
+      type  = "double"
       mode = "REQUIRED"
     }
+    fields {
+      name  = "weathercode"
+      type  = "integer"
+      mode = "REQUIRED"
+    }
+    fields {
+      name  = "temperature"
+      type  = "double"
+      mode = "REQUIRED"
+    }
+    fields {
+      name  = "windspeed"
+      type  = "integer"
+      mode = "REQUIRED"
+    }
+    fields {
+      name  = "winddirection"
+      type  = double"
+      mode = "REQUIRED"
+    }
+    fields {
+      name  = "humidity"
+      type  = "double"
+      mode = "REQUIRED"
+    }
+    fields {
+      name  = "time"
+      type  = "datetime"
+      mode = "REQUIRED"
+    }
+
   }
 }
 
@@ -100,16 +236,4 @@ resource "google_cloud_run_service" "default" {
       }
     }
   }
-}
-
-resource "google_project_service" "all" {
-  provider = google-beta
-  service  = [
-    "cloudfunctions.googleapis.com",
-    "run.googleapis.com",
-    "bigquery.googleapis.com",
-    "cloudscheduler.googleapis.com",
-    "eventarc.googleapis.com",
-    "storage.googleapis.com",
-  ]
 }
