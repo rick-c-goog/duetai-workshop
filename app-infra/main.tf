@@ -56,19 +56,13 @@ time_sleep.sleep_after_activate_service_apis
 3. Create 2 Storge Buckets
  *****************************************/
 
-resource "google_storage_bucket" "upload_bucket" {
-  name                              = "${var.project_id}-upload_bucket"
+resource "google_storage_bucket" "data_bucket" {
+  name                              = "${var.project_id}-data_bucket"
   location                          = var.region
   uniform_bucket_level_access       = true
   force_destroy                     = true
 }
 
-resource "google_storage_bucket" "function_bucket" {
-  name                              = "${var.project_id}-function_bucket"
-  location                          = var.region
-  uniform_bucket_level_access       = true
-  force_destroy                     = true
-}
 
 
 /******************************************
@@ -88,8 +82,8 @@ resource "google_pubsub_topic" "scheduler_topic" {
 5.Create a cloud scheduler
  *****************************************/
 resource "google_cloud_scheduler_job" "job" {
-  name        = "cron-bq-export-job"
-  description = "bq export job"
+  name        = "cron-weather-client-job"
+  description = "weather client job"
   schedule    = "0 12 * * SUN"
   pubsub_target {
     # topic.id is the topic's full resource name.
@@ -102,7 +96,7 @@ resource "google_cloud_scheduler_job" "job" {
 6.Service account and IAM permissions
  *****************************************/
 resource "google_service_account" "default" {
-  account_id   = "my-service-account"
+  account_id   = "duetai-demo"
   display_name = "My Service Account"
 }
 
@@ -142,57 +136,7 @@ resource "google_bigquery_dataset" "default" {
   dataset_id = "weather-dataset"
 }
 
-resource "google_bigquery_table" "default" {
-  table_id   = "weather-table"
-  dataset_id = google_bigquery_dataset.default.dataset_id
-  schema {
-    fields {
-      name  = "latitude"
-      type  = "double"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "longitude"
-      type  = "double"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "weathercode"
-      type  = "integer"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "temperature"
-      type  = "double"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "windspeed"
-      type  = "integer"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "winddirection"
-      type  = double"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "humidity"
-      type  = "double"
-      mode = "REQUIRED"
-    }
-    fields {
-      name  = "time"
-      type  = "datetime"
-      mode = "REQUIRED"
-    }
 
-  }
-}
-
-resource "google_storage_bucket" "default" {
-  name = "sample_data"
-}
 
 resource "google_cloud_scheduler_job" "default" {
   name         = "weather_client"
@@ -200,33 +144,32 @@ resource "google_cloud_scheduler_job" "default" {
   schedule     = "0 * * * *"
   time_zone    = "America/New_York"
   attempt_deadline = "3600s"
-  uri          = "https://us-central1-PROJECT_ID.cloudfunctions.net/weather_client"
-  http_method  = "POST"
-  oidc_token {
-    service_account_email = google_service_account.default.email
-    audience             = "https://us-central1-PROJECT_ID.cloudfunctions.net/weather_client"
+  pubsub_target {
+    # topic.id is the topic's full resource name.
+    topic_name = google_pubsub_topic.bq_export_topic.id
+    data       = base64encode("test")
   }
 }
+
 
 resource "google_eventarc_trigger" "default" {
   name        = "data_ingestion"
   description = "A trigger that runs when a file is uploaded to a Cloud Storage bucket"
   event_filters {
     type = "google.cloud.storage.object.v1.finalized"
+    bucket = google_storage_bucket.data_bucket.name
   }
-  transport {
-    pubsub {
-      topic = google_pubsub_topic.default.name
+  
+  service_account_email = google_service_account.default.email
+  destination {
+    cloud_run {
+      service = google_cloud_run_service.data-ingestion.name
+      region  = google_cloud_run_service.data-ingestion.location
     }
   }
-  service_account_email = google_service_account.default.email
 }
 
-resource "google_pubsub_topic" "default" {
-  name = "data_ingestion"
-}
-
-resource "google_cloud_run_service" "default" {
+resource "google_cloud_run_service" "data-ingestion" {
   name     = "data_ingestion"
   location = "us-central1"
   template {
