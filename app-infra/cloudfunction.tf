@@ -18,7 +18,7 @@ data "archive_file" "weather-client_source" {
 
 # Add source code zip to the Cloud Function's bucket
 resource "google_storage_bucket_object" "weather-client_zip" {
-    source       = data.archive_file.weather_client_source.output_path
+    source       = data.archive_file.weather-client_source.output_path
     content_type = "application/zip"
 
     # Append to the MD5 checksum of the files's content

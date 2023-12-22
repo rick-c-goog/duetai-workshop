@@ -22,6 +22,13 @@ module "activate_service_apis" {
   
 }
 
+resource "time_sleep" "sleep_after_activate_service_apis" {
+  create_duration = "60s"
+
+  depends_on = [
+    module.activate_service_apis
+  ]
+}
 
 /******************************************
 2. Project-scoped Org Policy Relaxing
