@@ -142,6 +142,13 @@ resource "google_project_iam_binding" "pubsub_read_write" {
   #service_account_id = google_service_account.default.name
 }
 
+resource "google_project_iam_binding" "eventarc_read_write" {
+  project = var.project_id
+  role    = "roles/eventarc.admin"
+  members = ["serviceAccount:${google_service_account.default.email}"]
+  #service_account_id = google_service_account.default.name
+}
+
 
 /******************************************
 7. Create BigQuery Dataset
