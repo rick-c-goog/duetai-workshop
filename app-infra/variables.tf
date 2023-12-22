@@ -34,7 +34,7 @@ variable "weather_api_url" {
   default = ""
 }
 
-variable gcs_sa" {
+variable "gcs_sa" {
   type        = string
   default = ""
 }
