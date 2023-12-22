@@ -103,7 +103,7 @@ resource "google_cloud_scheduler_job" "job" {
 6.Service account and IAM permissions
  *****************************************/
 resource "google_service_account" "default" {
-  account_id   = "duetai_demo"
+  account_id   = "duetai-demo"
   display_name = "My Service Account"
 }
 
@@ -204,11 +204,7 @@ resource "google_cloud_run_service" "data-ingestion" {
     metadata {
         namespace = var.project_id
     }
-     env {
-      name = "PORT"
-      value = "8080"
-    }
-
+    
     service_account_name =  google_service_account.default.name
     template {
         spec {
