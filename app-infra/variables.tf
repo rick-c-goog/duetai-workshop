@@ -18,20 +18,25 @@ variable "project_id" {
   type        = string
 }
 
-variable "project_number" {
-  type        = string
-}
+
 variable "region" {
   type        = string
   default = "us-east1"
 }
 
-variable "bq_export_bucket" {
+
+variable "region" {
   type        = string
-  default = "bq_export_bucket"
+  default = "us-east1"
 }
 
-variable "ee_export_bucket" {
+variable "weather_api_key" {
   type        = string
-  default = "ee_export_bucket"
+  default = ""
 }
+
+variable "weather_api_url" {
+  type        = string
+  default = ""
+}
+

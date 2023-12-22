@@ -131,12 +131,22 @@ resource "google_service_account_iam_binding" "pubsub_read_write" {
 }
 
 
+/******************************************
+7. Create BigQuery Dataset
+ *****************************************/
 
-resource "google_bigquery_dataset" "default" {
-  dataset_id = "weather-dataset"
+resource "google_bigquery_dataset" "weather_dataset" {
+  dataset_id                  = "weather"
+  friendly_name               = "weather_dataset"
+  description                 = "This is a weather dataset"
+  location                    = var.region
+  default_table_expiration_ms = 604800000
+
+  labels = {
+    env = "default"
+  }
+
 }
-
-
 
 resource "google_cloud_scheduler_job" "default" {
   name         = "weather_client"
@@ -146,7 +156,7 @@ resource "google_cloud_scheduler_job" "default" {
   attempt_deadline = "3600s"
   pubsub_target {
     # topic.id is the topic's full resource name.
-    topic_name = google_pubsub_topic.bq_export_topic.id
+    topic_name = google_pubsub_topic.scheduler_topic.id
     data       = base64encode("test")
   }
 }

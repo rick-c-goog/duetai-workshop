@@ -7,9 +7,10 @@ from google.cloud import storage
 def weather_to_gcs((event, context):
         api_key = os.environ['API_KEY']
         bucket_name = os.environ['BUCKET_NAME']
+        api_url=os.environ['API_URL']
         destination_blob_name = "weather_data.json"
         place = 'New York City,us'
-        url = f'https://api.openweathermap.org/data/2.5/weather?q={place}&appid={api_key}'
+        url = f'{api_url}?q={place}&appid={api_key}'
 
         response = requests.get(url)
 
