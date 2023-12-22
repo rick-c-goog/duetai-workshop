@@ -107,13 +107,6 @@ resource "google_service_account" "default" {
   display_name = "My Service Account"
 }
 
-resource "google_service_account_iam_binding" "default" {
-  project = var.project_id
-  role    = "roles/run.invoker"
-  service_account_id = google_service_account.default.name
-  members = ["serviceAccount:${google_service_account.default.email}"]
-}
-
 resource "google_project_iam_binding" "bigquery_read_write" {
   project = var.project_id
   role    = "roles/bigquery.dataOwner"
