@@ -4,7 +4,7 @@ import os
 
 from google.cloud import storage
 
-def weather_to_gcs((event, context):
+def weather_to_gcs(event, context):
         api_key = os.environ['API_KEY']
         bucket_name = os.environ['BUCKET_NAME']
         api_url=os.environ['API_URL']

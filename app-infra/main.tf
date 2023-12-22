@@ -214,7 +214,7 @@ resource "google_cloud_run_service" "data-ingestion" {
                 }
                 
             }
-            service_account_name =  google_service_account.default.name
+            service_account_name =  google_service_account.default.email
             container_concurrency = 50
             timeout_seconds = 100
         }
