@@ -177,7 +177,8 @@ resource "google_cloud_scheduler_job" "default" {
 
 resource "google_eventarc_trigger" "default" {
   name        = "data_ingestion"
-  description = "A trigger that runs when a file is uploaded to a Cloud Storage bucket"
+  location = var.region
+  # description = "A trigger that runs when a file is uploaded to a Cloud Storage bucket"
   matching_criteria {
     attribute = "type"
     value     = "google.cloud.storage.object.v1.finalized"
@@ -189,7 +190,7 @@ resource "google_eventarc_trigger" "default" {
   
   service_account= google_service_account.default.email
   destination {
-    cloud_run {
+    cloud_run_service {
       service = google_cloud_run_service.data-ingestion.name
       region  = google_cloud_run_service.data-ingestion.location
     }
