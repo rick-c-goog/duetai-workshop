@@ -144,8 +144,15 @@ resource "google_project_iam_binding" "pubsub_read_write" {
 
 resource "google_project_iam_binding" "eventarc_read_write" {
   project = var.project_id
-  role    = "roles/eventarc.admin"
+  role    = "roles/eventarc.eventReceiver"
   members = ["serviceAccount:${google_service_account.default.email}"]
+  #service_account_id = google_service_account.default.name
+}
+
+resource "google_project_iam_binding" "gcs_pubsub" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  members = ["serviceAccount:${var.gcs_sa}"]
   #service_account_id = google_service_account.default.name
 }
 
