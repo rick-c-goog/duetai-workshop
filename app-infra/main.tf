@@ -205,7 +205,7 @@ resource "google_cloud_run_service" "data-ingestion" {
         namespace = var.project_id
     }
     
-    service_account_name =  google_service_account.default.name
+   
     template {
         spec {
             containers {
@@ -213,7 +213,9 @@ resource "google_cloud_run_service" "data-ingestion" {
                 ports {
                     container_port = 8080
                 }
+                
             }
+             service_account_name =  google_service_account.default.name
             container_concurrency = 50
             timeout_seconds = 100
         }
