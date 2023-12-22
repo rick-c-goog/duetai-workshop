@@ -108,36 +108,42 @@ resource "google_service_account" "default" {
 }
 
 resource "google_service_account_iam_binding" "default" {
+  project = var.project_id
   role    = "roles/run.invoker"
   service_account_id = google_service_account.default.name
   members = ["serviceAccount:${google_service_account.default.email}"]
 }
 
 resource "google_project_iam_binding" "bigquery_read_write" {
+  project = var.project_id
   role    = "roles/bigquery.dataOwner"
   #service_account_id = google_service_account.default.name
   members = ["serviceAccount:${google_service_account.default.email}"]
 }
 
 resource "google_project_iam_binding" "cloud_function_invoker" {
+  project = var.project_id
   role    = "roles/cloudfunctions.invoker"
   members = ["serviceAccount:${google_service_account.default.email}"]
   #service_account_id = google_service_account.default.name
 }
 
 resource "google_project_iam_binding" "cloud_run_invoker" {
+  project = var.project_id
   role    = "roles/run.invoker"
   members = ["serviceAccount:${google_service_account.default.email}"]
   #service_account_id = google_service_account.default.name
 }
 
 resource "google_project_iam_binding" "cloud_storage_read_write" {
+  project = var.project_id
   role    = "roles/storage.objectAdmin"
   members = ["serviceAccount:${google_service_account.default.email}"]
   #service_account_id = google_service_account.default.name
 }
 
 resource "google_project_iam_binding" "pubsub_read_write" {
+  project = var.project_id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${google_service_account.default.email}"]
   #service_account_id = google_service_account.default.name
