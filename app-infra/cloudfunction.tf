@@ -50,7 +50,7 @@ resource "google_cloudfunctions_function" "weather-client_function" {
     # 
     event_trigger {
       event_type= "google.pubsub.topic.publish"
-      resource= "${local.cron_topic}"
+      resource= "${var.project_id}-cron_topic"
       #service= "pubsub.googleapis.com"
    }
    environment_variables = {

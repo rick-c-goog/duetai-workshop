@@ -24,12 +24,6 @@ variable "region" {
   default = "us-east1"
 }
 
-
-variable "region" {
-  type        = string
-  default = "us-east1"
-}
-
 variable "weather_api_key" {
   type        = string
   default = ""
