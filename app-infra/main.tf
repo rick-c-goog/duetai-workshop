@@ -175,7 +175,7 @@ resource "google_cloud_scheduler_job" "default" {
 
 
 resource "google_eventarc_trigger" "default" {
-  name        = "data_ingestion"
+  name        = "data-ingestion"
   location = var.region
   # description = "A trigger that runs when a file is uploaded to a Cloud Storage bucket"
   matching_criteria {
