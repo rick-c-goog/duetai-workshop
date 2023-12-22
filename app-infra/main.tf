@@ -222,4 +222,3 @@ resource "google_cloud_run_service" "data-ingestion" {
         latest_revision = true
     }
 }
-Copy
