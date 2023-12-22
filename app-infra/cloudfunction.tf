@@ -55,7 +55,7 @@ resource "google_cloudfunctions_function" "weather-client_function" {
    }
    environment_variables = {
     API_KEY = var.weather_api_key
-    BUCKET_NAME = google_storage_bucket.data_storage_bucket.name
+    BUCKET_NAME = google_storage_bucket.data_bucket.name
     API_URL=var.weather_api_url
    }
 

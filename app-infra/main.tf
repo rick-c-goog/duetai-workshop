@@ -128,6 +128,7 @@ resource "google_service_account_iam_binding" "cloud_function_invoker" {
 resource "google_service_account_iam_binding" "cloud_run_invoker" {
   role    = "roles/run.invoker"
   members = ["serviceAccount:${google_service_account.default.email}"]
+  service_account_id = google_service_account.default.account_id
 }
 
 resource "google_service_account_iam_binding" "cloud_storage_read_write" {
@@ -177,12 +178,16 @@ resource "google_cloud_scheduler_job" "default" {
 resource "google_eventarc_trigger" "default" {
   name        = "data_ingestion"
   description = "A trigger that runs when a file is uploaded to a Cloud Storage bucket"
-  event_filters {
-    type = "google.cloud.storage.object.v1.finalized"
-    bucket = google_storage_bucket.data_bucket.name
+  matching_criteria {
+    attribute = "type"
+    value     = "google.cloud.storage.object.v1.finalized"
+  }
+  matching_criteria {
+    attribute = "bucket"
+    value     = google_storage_bucket.data_bucket.name
   }
   
-  service_account_email = google_service_account.default.email
+  service_account= google_service_account.default.email
   destination {
     cloud_run {
       service = google_cloud_run_service.data-ingestion.name
@@ -192,13 +197,29 @@ resource "google_eventarc_trigger" "default" {
 }
 
 resource "google_cloud_run_service" "data-ingestion" {
-  name     = "data_ingestion"
-  location = "us-central1"
-  template {
-    spec {
-      containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello"
-      }
+    name     = "data-ingestion"
+    location = "europe-west1"
+
+    metadata {
+        namespace = var.project_id
     }
-  }
+
+    template {
+        spec {
+            containers {
+                image = "gcr.io/cloudrun/hello"
+                ports {
+                    container_port = 8080
+                }
+            }
+            container_concurrency = 50
+            timeout_seconds = 100
+        }
+    }
+
+    traffic {
+        percent         = 100
+        latest_revision = true
+    }
 }
+Copy
