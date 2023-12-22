@@ -103,44 +103,44 @@ resource "google_cloud_scheduler_job" "job" {
 6.Service account and IAM permissions
  *****************************************/
 resource "google_service_account" "default" {
-  account_id   = "duetai-demo"
+  account_id   = "duetai_demo"
   display_name = "My Service Account"
 }
 
 resource "google_service_account_iam_binding" "default" {
   role    = "roles/run.invoker"
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
   members = ["serviceAccount:${google_service_account.default.email}"]
 }
 
 resource "google_service_account_iam_binding" "bigquery_read_write" {
   role    = "roles/bigquery.dataOwner"
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
   members = ["serviceAccount:${google_service_account.default.email}"]
 }
 
 resource "google_service_account_iam_binding" "cloud_function_invoker" {
   role    = "roles/cloudfunctions.invoker"
   members = ["serviceAccount:${google_service_account.default.email}"]
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
 }
 
 resource "google_service_account_iam_binding" "cloud_run_invoker" {
   role    = "roles/run.invoker"
   members = ["serviceAccount:${google_service_account.default.email}"]
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
 }
 
 resource "google_service_account_iam_binding" "cloud_storage_read_write" {
   role    = "roles/storage.objectAdmin"
   members = ["serviceAccount:${google_service_account.default.email}"]
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
 }
 
 resource "google_service_account_iam_binding" "pubsub_read_write" {
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${google_service_account.default.email}"]
-  service_account_id = google_service_account.default.account_id
+  service_account_id = google_service_account.default.name
 }
 
 
@@ -204,7 +204,12 @@ resource "google_cloud_run_service" "data-ingestion" {
     metadata {
         namespace = var.project_id
     }
+     env {
+      name = "PORT"
+      value = "8080"
+    }
 
+    service_account_name =  google_service_account.default.name
     template {
         spec {
             containers {

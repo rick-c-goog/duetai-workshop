@@ -58,7 +58,7 @@ resource "google_cloudfunctions_function" "weather-client_function" {
     BUCKET_NAME = google_storage_bucket.data_bucket.name
     API_URL=var.weather_api_url
    }
-
+   service_account_email = google_service_account.default.email
     # Dependencies are automatically inferred so these lines can be deleted
     depends_on            = [
         google_storage_bucket.function_bucket,  # declared in `storage.tf`
