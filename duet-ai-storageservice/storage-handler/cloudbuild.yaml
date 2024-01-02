@@ -3,7 +3,6 @@ steps:
 - name: maven:3-eclipse-temurin-17
   entrypoint: mvn
   args: ["package", "-Dmaven.test.skip=true"]
-  dir: ${_DIR}
   # Build and tag using commit sha
 
 - name: 'gcr.io/cloud-builders/docker'
