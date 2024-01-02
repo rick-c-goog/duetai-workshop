@@ -232,7 +232,7 @@ resource "google_cloud_run_service" "data-ingestion" {
     template {
         spec {
             containers {
-                image = var.cr_image_uri
+                image = "gcr.io/cloudrun/hello"
                 ports {
                     container_port = 8080
                 }
