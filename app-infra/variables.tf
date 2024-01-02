@@ -39,3 +39,7 @@ variable "gcs_sa" {
   default = ""
 }
 
+variable "cr_image_uri" {
+  type        = string
+  default = ""
+}

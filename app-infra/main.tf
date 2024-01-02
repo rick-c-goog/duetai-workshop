@@ -211,8 +211,8 @@ resource "google_eventarc_trigger" "default" {
 }
 
 resource "google_cloud_run_service" "data-ingestion" {
-    name     = "data-ingestion"
-    location = "europe-west1"
+    name     = "duet-ai-dataservice"
+    location = "us-central1"
 
     metadata {
         namespace = var.project_id
@@ -222,7 +222,7 @@ resource "google_cloud_run_service" "data-ingestion" {
     template {
         spec {
             containers {
-                image = "gcr.io/cloudrun/hello"
+                image = var.cr_image_uri
                 ports {
                     container_port = 8080
                 }
