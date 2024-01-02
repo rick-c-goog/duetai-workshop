@@ -1,9 +1,13 @@
 steps:
-- name: 'gcr.io/cloud-builders/mvn'
-  args: ['clean', 'package']
+  # build app with Maven
+- name: maven:3-eclipse-temurin-17
+  entrypoint: mvn
+  args: ["package", "-Dmaven.test.skip=true"]
+  dir: ${_DIR}
+  # Build and tag using commit sha
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/duet-ai-storageservice', '.']
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/duet-ai-storageservice', '.', '-f', 'Dockerfile']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/duet-ai-storageservice']
