@@ -237,12 +237,12 @@ resource "google_cloud_run_service" "data-ingestion" {
                     container_port = 8080
                 }
                 env {
-                    name = "projectId"
+                    name = "PROJECT_ID"
                     value = var.project_id
                 }
                 env {
-                    name = "topicId"
-                    value = google_pubsub_topic.dataservice_topic.id
+                    name = "TOPIC_ID"
+                    value = google_pubsub_topic.dataservice_topic.name
                 }            
             }
             service_account_name =  google_service_account.default.email

@@ -148,8 +148,8 @@ public class CloudEventController {
 
     // Publish message to Cloud pubsub
 
-    String projectId = "tech-summit2022";
-    String topicId = "weather-reports";
+    String projectId = System.getenv("PROJECT_ID");
+    String topicId = System.getenv("TOPIC_ID");
 
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
     Publisher publisher = null;
