@@ -1,5 +1,5 @@
-API_KEY=XXXX
-API_URL=https://api.openweathermap.org/data/2.5/weather
-BUCKET_NAME=rick-devops-01-data_bucket
+export API_KEY=XXXX
+export API_URL=https://api.openweathermap.org/data/2.5/weather
+export BUCKET_NAME=rick-devops-01-data_bucket
 
-python test.py
+python test_api.py
