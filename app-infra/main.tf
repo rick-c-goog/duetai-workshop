@@ -85,6 +85,16 @@ resource "google_pubsub_topic" "scheduler_topic" {
   message_retention_duration = "86600s"
 }
 
+
+resource "google_pubsub_topic" "dataservice_topic" {
+  name = "weather-reports"
+
+  labels = {
+    job = "cron-job"
+  }
+
+  message_retention_duration = "86600s"
+}
 /******************************************
 5.Create a cloud scheduler
  *****************************************/
@@ -162,7 +172,7 @@ resource "google_project_iam_binding" "gcs_pubsub" {
  *****************************************/
 
 resource "google_bigquery_dataset" "weather_dataset" {
-  dataset_id                  = "weather"
+  dataset_id                  = "weatherDataset"
   friendly_name               = "weather_dataset"
   description                 = "This is a weather dataset"
   location                    = var.region
@@ -226,7 +236,14 @@ resource "google_cloud_run_service" "data-ingestion" {
                 ports {
                     container_port = 8080
                 }
-                
+                env {
+                    name = "projectId"
+                    value = var.project_id
+                }
+                env {
+                    name = "topicId"
+                    value = google_pubsub_topic.dataservice_topic.id
+                }            
             }
             service_account_name =  google_service_account.default.email
             container_concurrency = 50
