@@ -222,7 +222,7 @@ resource "google_eventarc_trigger" "default" {
 
 resource "google_cloud_run_service" "data-ingestion" {
     name     = "duet-ai-dataservice"
-    location = "us-central1"
+    location = var.region
 
     metadata {
         namespace = var.project_id
