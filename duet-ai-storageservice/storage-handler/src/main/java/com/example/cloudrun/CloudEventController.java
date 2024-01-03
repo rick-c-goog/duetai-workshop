@@ -150,10 +150,10 @@ public class CloudEventController {
 
     String projectId = System.getenv("PROJECT_ID");
     String topicId = System.getenv("TOPIC_ID");
-
+    System.out.println("Project ID: " + projectId+ "; TopicID:"+topicId);
     ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
     Publisher publisher = null;
-
+    
     try {
       // Create a publisher instance with default settings bound to the topic
       publisher = Publisher.newBuilder(
