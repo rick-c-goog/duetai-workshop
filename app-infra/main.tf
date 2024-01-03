@@ -179,6 +179,12 @@ resource "google_project_iam_binding" "set_bq_data_binding" {
   
 }
 
+resource "google_project_iam_binding" "cr_pubsub" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  members =  ["serviceAccount:${google_service_account.default.email}"]
+  #service_account_id = google_service_account.default.name
+}
 /******************************************
 7. Create BigQuery Dataset
  *****************************************/
