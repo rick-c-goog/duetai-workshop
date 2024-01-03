@@ -181,7 +181,7 @@ resource "google_project_iam_binding" "set_bq_data_binding" {
 
 resource "google_project_iam_binding" "cr_pubsub" {
   project = var.project_id
-  role    = "roles/pubsub.admin"
+  role    = "roles/pubsub.publisher"
   members =  ["serviceAccount:${google_service_account.default.email}"]
   #service_account_id = google_service_account.default.name
 }
@@ -236,6 +236,7 @@ resource "google_eventarc_trigger" "default" {
       region  = google_cloud_run_service.data-ingestion.location
     }
   }
+  depends_on=[google_service_account]
 }
 
 resource "google_cloud_run_service" "data-ingestion" {
