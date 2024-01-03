@@ -166,6 +166,18 @@ resource "google_project_iam_binding" "gcs_pubsub" {
   #service_account_id = google_service_account.default.name
 }
 
+resource "google_project_iam_binding" "set_bq_jb_binding" {
+  project = var.project_id
+  role               = "roles/bigquery.jobUser"
+  members  =  ["serviceAccount:${var.gcs_sa}"]
+  
+}
+resource "google_project_iam_binding" "set_bq_data_binding" {
+  project = var.project_id
+  role               = "roles/bigquery.dataEditor"
+  members  =  ["serviceAccount:${var.gcs_sa}"]
+  
+}
 
 /******************************************
 7. Create BigQuery Dataset
