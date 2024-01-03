@@ -236,7 +236,7 @@ resource "google_eventarc_trigger" "default" {
       region  = google_cloud_run_service.data-ingestion.location
     }
   }
-  depends_on=[google_service_account]
+  depends_on=[google_service_account.default]
 }
 
 resource "google_cloud_run_service" "data-ingestion" {
