@@ -11,11 +11,11 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/$PROJECT_ID/duet-ai-storageservice']
 
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['run', 'deploy', 'duet-ai-dataservice',
-         '--image', 'gcr.io/$PROJECT_ID/duet-ai-storageservice',
-         '--region', 'us-central1',
-         '--no-allow-unauthenticated']
+#- name: 'gcr.io/cloud-builders/gcloud'
+#  args: ['run', 'deploy', 'duet-ai-dataservice',
+#         '--image', 'gcr.io/$PROJECT_ID/duet-ai-storageservice',
+#         '--region', 'us-central1',
+#         '--no-allow-unauthenticated']
 
 options:
   logging: 'CLOUD_LOGGING_ONLY'
