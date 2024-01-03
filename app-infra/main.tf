@@ -244,7 +244,7 @@ resource "google_cloud_run_service" "data-ingestion" {
     template {
         spec {
             containers {
-                image = "gcr.io/${var.project_id}/duet-ai-storageservice'"
+                image = "gcr.io/${var.project_id}/duet-ai-storageservice"
                 ports {
                     container_port = 8080
                 }
