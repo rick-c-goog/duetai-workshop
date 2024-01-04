@@ -17,16 +17,16 @@ def weather_to_gcs(event, context):
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
-
+        tmp_data_file = "/tmp/"+destination_blob_name 
         if response.status_code == 200:
             weather_data = response.json()
             print(weather_data)
             # Save the weather data to a JSON file
-            with open("weather_data.json", "w") as f:
+            with open(tmp_data_file, "w") as f:
                 json.dump(weather_data, f)
 
             # Upload the JSON file to the blob
-            blob.upload_from_filename("weather_data.json")
+            blob.upload_from_filename(tmp_data_file)
 
         else:
             print("Error fetching weather data")
