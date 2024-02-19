@@ -4,6 +4,8 @@ import LocationSearch from './LocationSearch';
 import LocationTable from './LocationTable';
 import { WeatherLocation } from '../models/Weather';
 import { searchLocation } from '../services/WeatherService';
+import WeatherSummary from './WeatherSummary';
+
 const App: FC = () => {
   const [locations, setLocations] = useState<WeatherLocation[]>([]);
   const [currentLocation, setCurrentLocation] = useState<WeatherLocation | null>(null);
@@ -23,7 +25,7 @@ const App: FC = () => {
       <h1>Weather App</h1>
       <div className="row">
         <div className="col-md-6">
-          <LocationSearch onAddLocation={addLocation} />
+          <LocationSearch onSearch={addLocation} />
         </div>
         <div className="col-md-6">
           <h2>Location</h2>
@@ -34,8 +36,15 @@ const App: FC = () => {
           />
         </div>
       </div>
+      <div className="row">
+        <div className="col-md-12">
+        <WeatherSummary location={currentLocation}/>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default App;
+
+
