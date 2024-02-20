@@ -7,28 +7,22 @@ import {WeatherEntry} from './WeatherEntry';
 interface WeatherSummaryProps {
   location: WeatherLocation | null;
 }
-
-const WeatherSummary: React.FC<WeatherSummaryProps> = ({ location }) => {
+export const WeatherSummary: React.FC<WeatherSummaryProps> = ({location}) => {
   const [weather, setWeather] = useState<Weather | null>(null);
-  if(location === null) return null;
-  console.log(location)
-  useEffect(() => {
 
-    readWeather(location.id).then((weather) => {
-      setWeather(weather);
-    });
+  useEffect(() => {
+      if (location) {
+          readWeather(location.id).then(weather => setWeather(weather));
+      }
   }, [location]);
+
   if (!location || !weather) return null;
+
   return (
-    <div>
-      {weather && (
-        <div>
-          <h1>{location.name}</h1>
+      <div>
+          <hr/>
+          <h2>{location.name}</h2>
           <WeatherEntry weather={weather}/>
-        </div>
-      )}
-    </div>
+      </div>
   );
 };
-
-export default WeatherSummary;

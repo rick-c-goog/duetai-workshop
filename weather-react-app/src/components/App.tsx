@@ -4,7 +4,7 @@ import LocationSearch from './LocationSearch';
 import LocationTable from './LocationTable';
 import { WeatherLocation } from '../models/Weather';
 import { searchLocation } from '../services/WeatherService';
-import WeatherSummary from './WeatherSummary';
+import {WeatherSummary} from './WeatherSummary';
 
 const App: FC = () => {
   const [locations, setLocations] = useState<WeatherLocation[]>([]);
