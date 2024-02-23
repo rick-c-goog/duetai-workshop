@@ -6,12 +6,16 @@ import {convertUnixTimeToDate} from "../services/TimeUtilities";
 interface WeatherEntryProps {
     weather: Weather;
 }
+
+function convertToCelcius(inDegree: number) : String {
+    return (inDegree-273.15).toFixed(1)
+}
 export const WeatherEntry: FC<WeatherEntryProps> = ({weather}) =>
     <div>
         <div>{convertUnixTimeToDate(weather.dt).toLocaleTimeString()}</div>
         <div>
-            <strong>{weather.main.temp}°C</strong>
-            <div>({weather.main.temp_min}°C / {weather.main.temp_max}°C)</div>
+            <strong>{convertToCelcius(weather.main.temp)}°C</strong>
+            <div>({convertToCelcius(weather.main.temp_min)}°C / {convertToCelcius(weather.main.temp_max)}°C)</div>
         </div>
         <div>Humidity: {weather.main.humidity}%</div>
         {weather.weather.map(condition =>
